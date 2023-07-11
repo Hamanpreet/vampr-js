@@ -41,25 +41,57 @@ class Vampire {
     return this.creator === vampire.creator;
   }
 
+
   // Returns the vampire object with that name, or null if no vampire exists with that name
   vampireWithName(name) {
-    for (const offspring of this.offspring) {
-      if (offspring !== name) {
-        return null;
-      }
-      return this;
+    const rec = function (vampire) {
+      let offsprings = vampire.offspring;  //array(multiple children)
+      console.log(vampire);
+      if (vampire.name === name) {
+        return vampire;
+      } else {
+        for (let offspring of offsprings) {
+          const returnedValue = rec(offspring);
+          if (returnedValue) {
+            return returnedValue;
+          }
+        }
+      };
+      return null;
     }
+    return rec(this);
   }
 
+  
   // Returns the total number of vampires that exist
   get totalDescendents() {
-
+    let total = 1;   //make sure count starts with 1 for current vampire
+    let offsprings = this.offspring; //array
+    for (let offspring of offsprings) {
+      total++; // Count the current offspring
+      total += offspring.totalDescendents;
+    }
+    return total - 1;
   }
 
   // Returns an array of all the vampires that were converted after 1980
   get allMillennialVampires() {
-
+    let results = [];
+    let offsprings = this.offspring; //array
+    for (let offspring of offsprings) {
+      if (offspring.yearConverted > 1980) {
+        console.log(offspring.yearConverted);
+        results.push(offspring);
+      }
+      //We want to join the return value of recursive function too
+      const offspringMillennialVampires = offspring.allMillennialVampires;
+      results = results.concat(offspringMillennialVampires);
+    }
+    return results;
   }
+
+  /** Tree traversal methods **/
+
 
   /** Stretch **/
 
